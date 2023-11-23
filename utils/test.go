@@ -31,7 +31,7 @@ func SaveData(filename string){
 				data := models.User {
 					Email: email,
 					Fullname: row[1],
-					Module1: row[3] + " - " + row[4],
+					Module1: row[3] + " - " + row[4] + " - " + row[5] + " - " + row[6], 
 				}
 				response, err := usr.CreateUser(&data)
 				CheckError(err)
@@ -42,7 +42,7 @@ func SaveData(filename string){
 				data := models.User {
 					Email: email,
 					Fullname: row[1],
-					Module2: row[3] + " - " + row[4] + " - " + row[5],
+					Module2: row[3] + " - " + row[4] + " - " + row[5] + " - " + row[6],
 				}
 				response, err := usr.CreateUser(&data)
 				CheckError(err)
@@ -53,7 +53,7 @@ func SaveData(filename string){
 				data := models.User {
 					Email: email,
 					Fullname: row[1],
-					Module3: row[3] + " - " + row[4] + " - " + row[5],
+					Module3: row[3] + " - " + row[4] + " - " + row[5] + " - " + row[6],
 				}
 				response, err := usr.CreateUser(&data)
 				CheckError(err)
@@ -64,7 +64,7 @@ func SaveData(filename string){
 				data := models.User {
 					Email: email,
 					Fullname: row[1],
-					Module4:  row[3] + " - " + row[4] + " - " + row[5],
+					Module4:  row[3] + " - " + row[4] + " - " + row[5] + " - " + row[6],
 				}
 				response, err := usr.CreateUser(&data)
 				CheckError(err)
@@ -75,7 +75,7 @@ func SaveData(filename string){
 				data := models.User {
 					Email: email,
 					Fullname: row[1],
-					Module5: row[3] + " - " + row[4] + " - " + row[5],
+					Module5: row[3] + " - " + row[4] + " - " + row[5] + " - " + row[6],
 				}
 				response, err := usr.CreateUser(&data)
 				CheckError(err)

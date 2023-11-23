@@ -3,47 +3,34 @@ package structs
 type Db struct {
 	Email string
 	Name string
+	RiskScore string
 	Module string
 	Content string
+	ContentType string
+	Duration string
 	Status string
 	Past string
-}
-
-type Content struct {
-	Email string
-	Fullname string
-	Module string
-	Module1 string
-	Module2 string
-	Module3 string
-	Module4 string
-	Module5 string
-	Status string
-	Past string
-}
-
-type ContentRecord struct {
-	Email string
-	Name string
-	Module1 map[string]Content
-	Module2 map[string]Content
-	Module3 map[string]Content
-	Module4 map[string]Content
-	Module5 map[string]Content
-}
-
-type SumRecord struct {
-	Email string
-	Name string
-	Content string
-	Module1 string
-	Module2 string
-	Module3 string
-	Module4 string
-	Module5 string
+	Completed string
+	TimeSpent string
+	Score string
 }
 
 type DbEmail struct {
 	Email string
 }
 
+type Csv struct {
+	Email int
+	Firstname int
+	Lastname int
+	RiskScore int
+	Module int
+	Content int
+	ContentType int
+	Duration int
+	Status int
+	Past int
+	Completed int
+	TimeSpent int
+	Score int
+}
