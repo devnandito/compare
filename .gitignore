@@ -3,3 +3,5 @@ lib/.env
 *.csv
 /csv/*.csv
 /csv/*.xlsx
+*.db
+*.xlsx

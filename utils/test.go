@@ -2,10 +2,13 @@ package utils
 
 import (
 	"encoding/csv"
+	"fmt"
+	"io"
 	"log"
 	"os"
 
 	"github.com/devnandito/compare/models"
+	"github.com/xuri/excelize/v2"
 )
 
 var usr models.User
@@ -131,3 +134,69 @@ func SaveData(filename string){
 		}
 	}
 }
+
+func SaveToXlsx(filename, outputname string){
+	csvFile, err := os.Open(filename)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer csvFile.Close()
+
+	reader := csv.NewReader(csvFile)
+
+	f := excelize.NewFile()
+	sheetName := "Sheet1"
+	row := 1
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		cell, err := excelize.CoordinatesToCellName(1, row)
+		if err!= nil {
+			fmt.Println(err)
+			break
+		}
+
+		if row == 1 {
+			if err := f.SetSheetRow(sheetName, cell, &record); err!= nil {
+				fmt.Println(err)
+				break
+			}
+			row++
+			continue
+			}
+
+			data, err := ConvertSlice(record)
+			if err!= nil {
+				fmt.Println(err)
+				break
+			}
+
+			if err := f.SetSheetRow(sheetName, cell, &data); err!= nil {
+				fmt.Println(err)
+				break
+			}
+			row++
+		}
+
+		if err := f.SaveAs(outputname); err!= nil {
+			fmt.Println(err)
+		}
+	}
+
+	func ConvertSlice(record []string) (data []interface{}, err error) {
+		for _, arg := range record {
+			// var n float64
+			// if n, err = strconv.ParseFloat(arg, 64); err == nil {
+			// 	numbers = append(numbers, n)
+			// }
+			data = append(data, arg)
+		}
+		return
+	}
