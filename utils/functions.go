@@ -3,7 +3,12 @@ package utils
 import (
 	"bufio"
 	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/devnandito/compare/structs"
@@ -13,6 +18,12 @@ import (
 func CheckError(e error) {
 	if e != nil {
 		panic(e)
+	}
+}
+
+func CheckErrorMsg(msg string, e error){
+	if e != nil {
+		fmt.Println(msg,":",e)
 	}
 }
 
@@ -154,4 +165,76 @@ func WriteCsv(records map[int]*structs.Db, filename string) {
 		data = append(data, row)
 	}
 	w.WriteAll(data)
+}
+
+func GetEnrollmentsKb4(uri, per_page, xlsxName string, totalPage int){
+	var responseData []structs.Enrollment
+	f := excelize.NewFile()
+	headers := []string{"Email", "Name", "Module", "Content", "Status",}
+	
+	for i, header := range headers {
+		f.SetCellValue("Sheet1", fmt.Sprintf("%s%d", string(rune(65+i)), 1), header)
+	}
+
+	if err := f.SaveAs(xlsxName+".xlsx"); err != nil {
+		fmt.Println(err)
+	}
+
+	count := 0
+	for page := 1; page <= totalPage; page++{
+		params := url.Values{}
+		p := strconv.Itoa(page)
+		params.Add("page", p)
+		params.Add("per_page", per_page)
+		tk := "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzaXRlIjoidHJhaW5pbmcua25vd2JlNC5jb20iLCJ1dWlkIjoiNWQzYTY4ZGEtYTNhNi00OWY2LTk5NDAtNDU4ZDFkYjNhNzBkIiwic2NvcGVzIjpbImVsdmlzIl0sImFpZCI6NTgyNzIwfQ.j3iaBsTrWdyl6qZ8FM_DG4GLlJAB0UK39SVNut5rFSQNOgRD6Teeyy9iHhbMCKhKbObDsrH26HqhWQbnI2t9IQ"
+	
+		req, err := http.NewRequest("GET", uri+"?"+params.Encode(), nil)
+		CheckErrorMsg("Error creating request: ", err)
+			
+		req.Header.Set("accept", "application/json")
+		req.Header.Set("Authorization", tk)
+	
+		client := &http.Client{}
+		res, err := client.Do(req)
+		CheckErrorMsg("Error sending request: ", err)
+		defer res.Body.Close()
+	
+		if res.StatusCode != http.StatusOK {
+			fmt.Println("Error: ", res.Status)
+		} else {
+			fmt.Printf("Page %d load Successfully \n", page)
+		}
+	
+		err = json.NewDecoder(res.Body).Decode(&responseData)
+		CheckErrorMsg("Error decoding JSON: ", err)
+
+		data := [][]interface{}{}
+		for _, value := range responseData {
+			row := []interface{}{
+				value.User.Email,
+				value.User.FirstName+" "+value.User.LastName,
+				value.CampaignName,
+				value.ModuleName,
+				value.Status,
+			}
+			data = append(data, row)
+		}
+
+		file, err := excelize.OpenFile(xlsxName+".xlsx")
+		CheckErrorMsg("Error opening file: ", err)
+	
+		for _, row := range data {
+			dataRow := count + 2
+			for j, col := range row {
+				file.SetCellValue("Sheet1", fmt.Sprintf("%s%d", string(rune(65+j)), dataRow), col)
+			}
+			count++
+		}
+	
+		err = file.Save()
+	
+		CheckErrorMsg("Error to save file: ", err)
+
+		fmt.Println("Excel update successfuly")
+	}
 }
